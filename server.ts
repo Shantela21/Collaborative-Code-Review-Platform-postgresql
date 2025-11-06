@@ -1,5 +1,6 @@
 require('dotenv').config();
 import { Express, Request,Response, NextFunction } from "express";
+import { testDbConnection } from "./config/database";
 
 const express = require('express')
 const app: Express = express()
@@ -19,9 +20,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
    });
 });
 app.listen(process.env.PORT, () => {
-  console.log(`Example app listening on port ${process.env.PORT}`)
+  console.log(`Server is running on port ${process.env.PORT}`)
 })
 
+testDbConnection();
 
 
 
