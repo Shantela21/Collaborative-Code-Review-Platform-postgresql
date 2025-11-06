@@ -1,9 +1,9 @@
 require('dotenv').config();
-import { Express, Request,Response } from "express";
-
+import { Express, Request,Response, NextFunction } from "express";
 
 const express = require('express')
 const app: Express = express()
+app.use(express.json())
 
 
 app.get('/', (req, res) => {
@@ -12,6 +12,12 @@ app.get('/', (req, res) => {
   res.send('Welcome to the collaboration code review platform!')
 })
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+   res.status(404).json({
+    success: false,
+    message: "Route not found"
+   });
+});
 app.listen(process.env.PORT, () => {
   console.log(`Example app listening on port ${process.env.PORT}`)
 })
