@@ -1,16 +1,20 @@
 require('dotenv').config();
 import { Express, Request,Response, NextFunction } from "express";
 import { testDbConnection } from "./config/database";
+import path from "path";
+
 
 const express = require('express')
 const app: Express = express()
 app.use(express.json())
+// serve static asset from public
+app.use(express.static(path.join(__dirname, 'public')))
 
 
 app.get('/', (req, res) => {
     req: Request
     res: Response
-  res.send('Welcome to the collaboration code review platform!')
+  res.sendFile(path.join(__dirname, 'views', 'index.html'))
 })
 
 app.use((req: Request, res: Response, next: NextFunction) => {
