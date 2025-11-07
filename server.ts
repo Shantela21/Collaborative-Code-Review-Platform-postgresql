@@ -2,6 +2,8 @@ require('dotenv').config();
 import { Express, Request,Response, NextFunction } from "express";
 import { testDbConnection } from "./config/database";
 import path from "path";
+import authRoutes from "./routes/authRoutes";
+import userRoutes from "./routes/userRoutes";
 
 
 const express = require('express')
@@ -23,9 +25,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     message: "Route not found"
    });
 });
+
+app.use('/api/auth', authRoutes)
+app.use('/api/users', userRoutes)
+
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`)
 })
+
+
 
 testDbConnection();
 
