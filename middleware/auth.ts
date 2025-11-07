@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/userModel';
+
 
 declare global {
   namespace Express {
@@ -22,15 +22,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret') as { id: number; email: string };
 
-    // Get user from the token
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      return res.status(401).json({ message: 'Token is not valid' });
-    }
-
-    // Add user to request object
-    req.user = user;
+   
 
     next();
   } catch (error) {

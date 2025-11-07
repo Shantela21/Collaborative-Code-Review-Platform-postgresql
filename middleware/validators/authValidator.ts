@@ -1,9 +1,9 @@
 import { body } from 'express-validator';
 
 export const registerValidator = [
-  body('username')
-    .notEmpty().withMessage('Username is required')
-    .isLength({ min: 3 }).withMessage('Username must be at least 3 characters long')
+  body('name')
+    .notEmpty().withMessage('name is required')
+    .isLength({ min: 3 }).withMessage('name must be at least 3 characters long')
     .trim()
     .escape(),
 
@@ -19,16 +19,7 @@ export const registerValidator = [
   body('full_name')
     .optional()
     .trim()
-    .escape(),
-
-  body('bio')
-    .optional()
-    .trim()
-    .escape(),
-
-  body('avatar_url')
-    .optional()
-    .isURL().withMessage('Avatar must be a valid URL')
+    .escape()
 ];
 
 export const loginValidator = [
