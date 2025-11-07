@@ -23,11 +23,13 @@
 // export default router;
 
 
-import { createNewUser } from "../controllers/authController";
+
+import { createNewUser, login } from "../controllers/authController";
 import { Router } from "express";
 
 const router = Router()
 
 router.post('/register', createNewUser)
+router.get('/login', login)
 
 export default router

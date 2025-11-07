@@ -120,6 +120,7 @@
 
 import { Request, Response } from 'express';
 import { createUser } from '../service/authService';
+import { getUserByEmail } from '../service/authService';
 
 
 export const createNewUser = async (req: Request, res: Response) => {
@@ -134,4 +135,13 @@ export const createNewUser = async (req: Request, res: Response) => {
     res.status(404).json(error)
   }
 
-}
+};
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const user = await getUserByEmail(email);
+  } catch (error) {
+    res.status(404).json(error)
+  }
+};

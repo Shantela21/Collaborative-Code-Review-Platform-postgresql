@@ -21,7 +21,8 @@ app.get('/', (req, res) => {
 
 
 app.use('/api/auth', authRoutes)
-// app.use('/api/users', userRoutes)
+
+
 app.use((req: Request, res: Response, next: NextFunction) => {
    res.status(404).json({
     success: false,
