@@ -4,6 +4,7 @@ import { testDbConnection } from "./config/database";
 import path from "path";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
+import projectRoutes from "routes/projectRoutes";
 
 
 const express = require('express')
@@ -22,7 +23,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
-// app.use('/api/projects', authRoutes)
+app.use('/api/projects', projectRoutes)
 
 
 app.use((req: Request, res: Response, next: NextFunction) => {
