@@ -3,7 +3,7 @@ import { Express, Request,Response, NextFunction } from "express";
 import { testDbConnection } from "./config/database";
 import path from "path";
 import authRoutes from "./routes/authRoutes";
-// import userRoutes from "./routes/userRoutes";
+import userRoutes from "./routes/userRoutes";
 
 
 const express = require('express')
@@ -21,8 +21,8 @@ app.get('/', (req, res) => {
 
 
 app.use('/api/auth', authRoutes)
-app.use('/api/users', authRoutes)
-app.use('/api/projects', authRoutes)
+app.use('/api/users', userRoutes)
+// app.use('/api/projects', authRoutes)
 
 
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -43,53 +43,3 @@ testDbConnection();
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import express from "express";
-// import dotenv from "dotenv";
-// import { testDbConnection } from "../src/config/database";
-
-
-// dotenv.config();
-
-// const app = express();
-
-// const PORT = process.env.PORT || 5000;
-
-// const startServer = async () => {
-//     await testDbConnection();
-// app.use(express.json());
-
-
-// // testDbConnection();
-// app.listen(PORT, () => {
-//   console.log(`Server is running on http://localhost:${PORT}`);
-// })
-// };
-
-// startServer();
