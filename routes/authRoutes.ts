@@ -24,12 +24,18 @@
 
 
 
-import { createNewUser, login } from "../controllers/authController";
+import { get } from "http";
+import { createNewUser, getMe, login } from "../controllers/authController";
 import { Router } from "express";
 
 const router = Router()
 
 router.post('/register', createNewUser)
 router.get('/login', login)
+router.get('/me', getMe)
+router.put('/update', getMe)
+router.delete('/delete', getMe)
+
+
 
 export default router

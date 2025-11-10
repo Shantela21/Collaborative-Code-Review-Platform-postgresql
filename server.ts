@@ -21,6 +21,8 @@ app.get('/', (req, res) => {
 
 
 app.use('/api/auth', authRoutes)
+app.use('/api/users', authRoutes)
+app.use('/api/projects', authRoutes)
 
 
 app.use((req: Request, res: Response, next: NextFunction) => {

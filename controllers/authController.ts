@@ -119,8 +119,8 @@
 
 
 import { Request, Response } from 'express';
-import { createUser } from '../service/authService';
-import { getUserByEmail } from '../service/authService';
+import { createUser, getUserByEmail, getUserById, getUserByName as findUserByName, updateUser as updateUserData, deleteUser as deleteUserData } from '../service/authService';
+
 
 
 export const createNewUser = async (req: Request, res: Response) => {
@@ -141,6 +141,47 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const user = await getUserByEmail(email);
+  } catch (error) {
+    res.status(404).json(error)
+  }
+};
+
+export const getMe = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const user = await getUserById(parseInt(id));
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(404).json(error)
+  }
+};
+
+export const getUserByName = async (req: Request, res: Response) => { 
+  try {
+    const { name } = req.params;
+    const user = await findUserByName(name);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(404).json(error)
+  }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, email, password } = req.body;
+  try {
+    const user = await updateUserData(parseInt(id), { name, email, password });
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(404).json(error);
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const user = await deleteUserData(parseInt(id));
+    res.status(200).json(user);
   } catch (error) {
     res.status(404).json(error)
   }
