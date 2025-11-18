@@ -1,27 +1,30 @@
-import { query } from "../config/database";
-import { User } from "../models/userModel";
+import { User, UserWithoutPassword, UserModel } from "../models/userModel";
+import bcrypt from 'bcryptjs';
 
-
-
-
-export const updateUserDB = async (id: number, user: User) => {
-    const { rows } = await query('UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4 RETURNING *', [user.name, user.email, user.password, id]);
-    return rows[0];
-  };
-
-export const deleteUserDB = async (id: number) => {
-    const { rows } = await query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
-    return rows[0];
-  };
-
-  export const getAllUsersDB = async () => {
-    const { rows } = await query('SELECT * FROM users');
-    return rows;
-  };
-
-
-export const getUserByIdDB = async (id: number) => {
-    const { rows } = await query('SELECT * FROM users WHERE id = $1', [id]);
-    return rows[0];
-  };
+export const updateUserDB = async (id: number, updates: { name?: string; email?: string; password?: string }): Promise<UserWithoutPassword | null> => {
+  const updateData: any = {};
   
+  if (updates.name) updateData.name = updates.name;
+  if (updates.email) updateData.email = updates.email;
+  if (updates.password) {
+    updateData.password = await bcrypt.hash(updates.password, 10);
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    return await UserModel.findById(id);
+  }
+
+  return await UserModel.update(id, updateData);
+};
+
+export const deleteUserDB = async (id: number): Promise<boolean> => {
+  return await UserModel.delete(id);
+};
+
+export const getAllUsersDB = async (limit = 50, offset = 0): Promise<UserWithoutPassword[]> => {
+  return await UserModel.getAll(limit, offset);
+};
+
+export const getUserByIdDB = async (id: number): Promise<UserWithoutPassword | null> => {
+  return await UserModel.findById(id);
+};

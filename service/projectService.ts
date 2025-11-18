@@ -1,5 +1,5 @@
-import { query } from '../config/database';
-import { Project, ProjectMember } from '../types';
+import { Project, ProjectMember, ProjectModel } from '../models/projectModel';
+import { UserWithoutPassword, UserModel } from '../models/userModel';
 
 export interface CreateProjectInput {
   title: string;
@@ -12,92 +12,61 @@ export interface UpdateProjectInput {
   description?: string;
 }
 
-// Project CRUD operations
-export const createProjectDB = async (data: CreateProjectInput) => {
-  const { title, description, created_by } = data;
-  const { rows } = await query(
-    'INSERT INTO projects (title, description, created_by) VALUES ($1, $2, $3) RETURNING *',
-    [title, description, created_by]
-  );
-  return rows[0];
+export const createProjectDB = async (data: CreateProjectInput): Promise<Project | null> => {
+  return await ProjectModel.create(data);
 };
 
-export const getAllProjectsDB = async (userId: number) => {
-  const { rows } = await query(
-    `SELECT p.* FROM projects p
-     JOIN project_members pm ON p.id = pm.project_id
-     WHERE pm.user_id = $1
-     ORDER BY p.updated_at DESC`,
-    [userId]
-  );
-  return rows;
+export const getAllProjectsDB = async (userId: number): Promise<Project[]> => {
+  return await ProjectModel.findByUserId(userId);
 };
 
-export const getProjectByIdDB = async (id: number, userId: number) => {
-  const { rows } = await query(
-    `SELECT p.* FROM projects p
-     JOIN project_members pm ON p.id = pm.project_id
-     WHERE p.id = $1 AND pm.user_id = $2`,
-    [id, userId]
-  );
-  return rows[0];
+export const getProjectByIdDB = async (id: number, userId: number): Promise<Project | null> => {
+  const project = await ProjectModel.findById(id);
+  if (!project) return null;
+  
+  const isMember = await ProjectModel.isMember(id, userId);
+  return isMember ? project : null;
 };
 
-export const updateProjectDB = async (id: number, data: UpdateProjectInput) => {
-  const { title, description } = data;
-  const { rows } = await query(
-    `UPDATE projects 
-     SET title = COALESCE($1, title),
-         description = COALESCE($2, description),
-         updated_at = CURRENT_TIMESTAMP
-     WHERE id = $3
-     RETURNING *`,
-    [title, description, id]
-  );
-  return rows[0];
+export const updateProjectDB = async (id: number, data: UpdateProjectInput): Promise<Project | null> => {
+  return await ProjectModel.update(id, data);
 };
 
-export const deleteProjectDB = async (id: number) => {
-  const { rowCount } = await query('DELETE FROM projects WHERE id = $1', [id]);
-  return rowCount !== null && rowCount > 0;
+export const deleteProjectDB = async (id: number): Promise<boolean> => {
+  return await ProjectModel.delete(id);
 };
 
-// Project Member operations
-export const addProjectMemberDB = async (projectId: number, userId: number, role: string = 'member') => {
-  const { rows } = await query(
-    `INSERT INTO project_members (project_id, user_id, role)
-     VALUES ($1, $2, $3)
-     ON CONFLICT (project_id, user_id) 
-     DO UPDATE SET role = EXCLUDED.role
-     RETURNING *`,
-    [projectId, userId, role]
-  );
-  return rows[0];
+export const addProjectMemberDB = async (projectId: number, userId: number, role: string = 'member'): Promise<ProjectMember | null> => {
+  return await ProjectModel.addMember(projectId, userId, role as 'admin' | 'member');
 };
 
-export const removeProjectMemberDB = async (projectId: number, userId: number) => {
-  const { rowCount } = await query(
-    'DELETE FROM project_members WHERE project_id = $1 AND user_id = $2',
-    [projectId, userId]
-  );
-  return rowCount !== null && rowCount > 0;
+export const removeProjectMemberDB = async (projectId: number, userId: number): Promise<boolean> => {
+  return await ProjectModel.removeMember(projectId, userId);
 };
 
-export const getProjectMembersDB = async (projectId: number) => {
-  const { rows } = await query(
-    `SELECT u.id, u.name, u.email, pm.role, pm.created_at as member_since
-     FROM project_members pm
-     JOIN users u ON pm.user_id = u.id
-     WHERE pm.project_id = $1`,
-    [projectId]
-  );
-  return rows;
+export const getProjectMembersDB = async (projectId: number): Promise<Array<UserWithoutPassword & { role: string; member_since: Date }>> => {
+  const members = await ProjectModel.getMembers(projectId);
+  const result = [];
+  
+  for (const member of members) {
+    const user = await UserModel.findById(member.user_id);
+    if (user && user.id && user.name && user.email) {
+      result.push({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: member.role,
+        member_since: member.created_at || new Date(),
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      });
+    }
+  }
+  
+  return result;
 };
 
-export const getProjectMemberDB = async (projectId: number, userId: number) => {
-  const { rows } = await query(
-    'SELECT * FROM project_members WHERE project_id = $1 AND user_id = $2',
-    [projectId, userId]
-  );
-  return rows[0];
+export const getProjectMemberDB = async (projectId: number, userId: number): Promise<ProjectMember | null> => {
+  const members = await ProjectModel.getMembers(projectId);
+  return members.find(m => m.user_id === userId) || null;
 };
