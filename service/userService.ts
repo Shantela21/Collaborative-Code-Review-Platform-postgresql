@@ -1,3 +1,4 @@
+import { createUser } from './authService';
 import { User, UserWithoutPassword, UserModel } from "../models/userModel";
 import bcrypt from 'bcryptjs';
 
@@ -28,3 +29,4 @@ export const getAllUsersDB = async (limit = 50, offset = 0): Promise<UserWithout
 export const getUserByIdDB = async (id: number): Promise<UserWithoutPassword | null> => {
   return await UserModel.findById(id);
 };
+

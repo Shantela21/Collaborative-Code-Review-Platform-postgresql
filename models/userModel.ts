@@ -1,11 +1,11 @@
-import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';
-import { query } from '../config/database';
+import dotenv from "dotenv";
+import bcrypt from "bcryptjs";
+import { query } from "../config/database";
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 export interface User {
   id?: number;
@@ -27,20 +27,53 @@ export interface UserWithoutPassword {
 }
 
 export class UserModel {
-  static async create(user: Omit<User, 'id' | 'created_at' | 'updated_at'>): Promise<UserWithoutPassword> {
+  static createReviewTable() {
+    throw new Error("Method not implemented.");
+  }
+  static createCommentTable() {
+    throw new Error("Method not implemented.");
+  }
+  static createProjectTable() {
+    throw new Error("Method not implemented.");
+  }
+  static createSubmissionTable() {
+    throw new Error("Method not implemented.");
+  }
+  static async create(
+    user: Omit<User, "id" | "created_at" | "updated_at">,
+  ): Promise<UserWithoutPassword> {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const text = `
       INSERT INTO users (name, email, password, role)
       VALUES ($1, $2, $3, $4)
       RETURNING id, name, email, role, created_at, updated_at
     `;
-    const values = [user.name, user.email, hashedPassword, user.role || 'developer'];
+    const values = [
+      user.name,
+      user.email,
+      hashedPassword,
+      user.role || "developer",
+    ];
     const result = await query(text, values);
     return result.rows[0];
   }
 
+  static async createUserTable(): Promise<void> {
+    const text = `CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      role VARCHAR(50) NOT NULL DEFAULT 'developer',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`;
+    const results = await query(text);
+    console.log("User table created or already exists");
+  }
+
   static async findByEmail(email: string): Promise<User | null> {
-    const text = 'SELECT * FROM users WHERE email = $1';
+    const text = "SELECT * FROM users WHERE email = $1";
     const result = await query(text, [email]);
     return result.rows[0] || null;
   }
@@ -55,7 +88,10 @@ export class UserModel {
     return result.rows[0] || null;
   }
 
-  static async update(id: number, updates: Partial<Omit<User, 'id' | 'password' | 'created_at'>>): Promise<UserWithoutPassword | null> {
+  static async update(
+    id: number,
+    updates: Partial<Omit<User, "id" | "password" | "created_at">>,
+  ): Promise<UserWithoutPassword | null> {
     const fields = [];
     const values = [];
     let paramIndex = 1;
@@ -80,7 +116,7 @@ export class UserModel {
 
     const text = `
       UPDATE users 
-      SET ${fields.join(', ')}
+      SET ${fields.join(", ")}
       WHERE id = $${paramIndex}
       RETURNING id, name, email, role, created_at, updated_at
     `;
@@ -89,7 +125,10 @@ export class UserModel {
     return result.rows[0] || null;
   }
 
-  static async updatePassword(id: number, newPassword: string): Promise<boolean> {
+  static async updatePassword(
+    id: number,
+    newPassword: string,
+  ): Promise<boolean> {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     const text = `
       UPDATE users 
@@ -101,12 +140,15 @@ export class UserModel {
   }
 
   static async delete(id: number): Promise<boolean> {
-    const text = 'DELETE FROM users WHERE id = $1';
+    const text = "DELETE FROM users WHERE id = $1";
     const result = await query(text, [id]);
     return (result.rowCount ?? 0) > 0;
   }
 
-  static async comparePassword(candidatePassword: string, hashedPassword: string): Promise<boolean> {
+  static async comparePassword(
+    candidatePassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     return bcrypt.compare(candidatePassword, hashedPassword);
   }
 

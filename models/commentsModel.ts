@@ -33,6 +33,22 @@ export class CommentModel {
     return result.rows[0];
   }
 
+  static async createCommentTable(): Promise<void> {
+    const text = `CREATE TABLE IF NOT EXISTS comments (
+      id SERIAL PRIMARY KEY,
+      content TEXT NOT NULL,
+      submission_id INTEGER REFERENCES submissions(id) NOT NULL,
+      user_id INTEGER REFERENCES users(id) NOT NULL,
+      parent_id INTEGER REFERENCES comments(id),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`;
+    const results = await query(text);
+    console.log("Comment table created or already exists");
+  }
+
+
+
   static async findById(id: number): Promise<Comment | null> {
     const text = `
       SELECT id, content, submission_id, user_id, parent_id, created_at, updated_at

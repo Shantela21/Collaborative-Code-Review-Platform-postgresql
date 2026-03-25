@@ -1,3 +1,4 @@
+import { createSubmission } from './../controllers/submissionController';
 import { query } from '../config/database';
 
 export interface Submission {
@@ -40,6 +41,24 @@ export class SubmissionModel {
     const result = await query(text, values);
     return result.rows[0];
   }
+
+  static async createSubmissionTable(): Promise<void> {
+    const text = `CREATE TABLE IF NOT EXISTS submissions (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      code_content TEXT NOT NULL,
+      project_id INTEGER REFERENCES projects(id) NOT NULL,
+      submitted_by INTEGER REFERENCES users(id) NOT NULL,
+      status VARCHAR(50) NOT NULL DEFAULT 'pending',
+      file_path VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`;
+    const results = await query(text);
+    console.log("Submission table created or already exists");
+  }
+
 
   static async findById(id: number): Promise<Submission | null> {
     const text = `

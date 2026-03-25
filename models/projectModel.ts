@@ -49,6 +49,21 @@ export class ProjectModel {
     return result.rows[0] || null;
   }
 
+  static async createProjectTable(): Promise<void> {
+    const text = `CREATE TABLE IF NOT EXISTS projects (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      created_by INTEGER REFERENCES users(id) NOT NULL,
+      status VARCHAR(50) NOT NULL DEFAULT 'active',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`;
+    const results = await query(text);
+    console.log("Project table created or already exists");
+  }
+
+
   static async findByUserId(userId: number): Promise<Project[]> {
     const text = `
       SELECT p.id, p.title, p.description, p.created_by, p.status, p.created_at, p.updated_at

@@ -47,6 +47,21 @@ export class ReviewModel {
     return result.rows[0];
   }
 
+  static async createReviewTable(): Promise<void> {
+    const text = `CREATE TABLE IF NOT EXISTS reviews (
+      id SERIAL PRIMARY KEY,
+      submission_id INTEGER REFERENCES submissions(id) NOT NULL,
+      reviewer_id INTEGER REFERENCES users(id) NOT NULL,
+      status VARCHAR(50) NOT NULL DEFAULT 'pending',
+      feedback TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`;
+    const results = await query(text);
+    console.log("Review table created or already exists");
+  }
+
+
   static async findById(id: number): Promise<Review | null> {
     const text = `
       SELECT id, submission_id, reviewer_id, status, feedback, created_at, updated_at
