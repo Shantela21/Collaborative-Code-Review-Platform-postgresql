@@ -14,6 +14,8 @@ const pool = new Pool({
 
 export const query = (text: string, params?: any[]) => pool.query(text, params);
 
+export { pool };
+
 export const testDbConnection = async () => {
     try {
          const client = await pool.connect()

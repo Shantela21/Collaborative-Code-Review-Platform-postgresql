@@ -2,19 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../service/authService';
 import { UserModel } from '../models/userModel';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: number;
-        email: string;
-        name: string;
-        role: string;
-      };
-    }
-  }
-}
-
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');

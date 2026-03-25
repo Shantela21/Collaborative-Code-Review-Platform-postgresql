@@ -8,6 +8,7 @@ import {
   deleteSubmission,
   updateSubmissionStatus
 } from '../controllers/submissionController';
+import { getSubmissionsByProject } from '../controllers/projectSubmissionsController';
 
 const router = Router();
 
@@ -20,6 +21,9 @@ router.get('/', getAllSubmissions);
 router.get('/:id', getSubmissionById);
 router.put('/:id', updateSubmission);
 router.delete('/:id', deleteSubmission);
+
+// Project submissions endpoint (for /api/projects/:id/submissions)
+router.get('/project/:projectId', getSubmissionsByProject);
 
 // Submission status update
 router.patch('/:id/status', updateSubmissionStatus);
