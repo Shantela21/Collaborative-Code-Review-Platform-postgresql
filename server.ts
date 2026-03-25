@@ -7,7 +7,11 @@ import userRoutes from "./routes/userRoutes";
 import projectRoutes from "./routes/projectRoutes";
 import submissionRoutes from "./routes/submissionRoutes";
 import commentRoutes from "./routes/commentRoutes";
-import { UserModel } from "models/userModel";
+import { UserModel } from "./models/userModel";
+import { SubmissionModel } from "./models/submissionModel";
+import { ProjectModel } from "./models/projectModel";
+import { CommentModel } from "./models/commentsModel";
+import { ReviewModel } from "./models/reviewModel";
 
 const express = require("express");
 const app: Express = express();
@@ -34,10 +38,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 async function initializeDB() {
   await UserModel.createUserTable();
-  await UserModel.createSubmissionTable();
-  await UserModel.createProjectTable();
-  await UserModel.createCommentTable();
-  await UserModel.createReviewTable();
+  await SubmissionModel.createSubmissionTable();
+  await ProjectModel.createProjectTable();
+  await CommentModel.createCommentTable();
+  await ReviewModel.createReviewTable();
 }
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);

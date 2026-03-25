@@ -27,18 +27,6 @@ export interface UserWithoutPassword {
 }
 
 export class UserModel {
-  static createReviewTable() {
-    throw new Error("Method not implemented.");
-  }
-  static createCommentTable() {
-    throw new Error("Method not implemented.");
-  }
-  static createProjectTable() {
-    throw new Error("Method not implemented.");
-  }
-  static createSubmissionTable() {
-    throw new Error("Method not implemented.");
-  }
   static async create(
     user: Omit<User, "id" | "created_at" | "updated_at">,
   ): Promise<UserWithoutPassword> {
