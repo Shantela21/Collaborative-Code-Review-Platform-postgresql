@@ -61,8 +61,8 @@ A backend server for a **Collaborative Code Review Platform**, built with **Node
 ### 1. Clone the repository
 
 ```bash
- git clone https://github.com/your-username/collaborative-code-review-platform.git
- cd collaborative-code-review-platform
+git clone https://github.com/Shantela21/Collaborative-Code-Review-Platform-postgresql.git
+cd Collaborative-Code-Review-Platform-postgresql
 ```
 
 ### 2. Install dependencies
@@ -76,8 +76,12 @@ A backend server for a **Collaborative Code Review Platform**, built with **Node
 Create a `.env` file in the root directory:
 
 ```
-PORT=5000
-DATABASE_URL=postgres://user:password@localhost:5432/databasename
+DB_USER=your_db_username
+DB_PASSWORD=your_db_password
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=Collaborative-Code-Review-Platform-postgresql
+PORT=4040
 JWT_SECRET=your_jwt_secret
 ```
 
