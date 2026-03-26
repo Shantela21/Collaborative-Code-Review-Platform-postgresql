@@ -26,7 +26,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role || 'user'
+      role: user.role || 'reviewer'
     };
     next();
   } catch (error: any) {

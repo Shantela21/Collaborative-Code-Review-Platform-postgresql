@@ -36,8 +36,8 @@ export const deleteProjectDB = async (id: number): Promise<boolean> => {
   return await ProjectModel.delete(id);
 };
 
-export const addProjectMemberDB = async (projectId: number, userId: number, role: string = 'member'): Promise<ProjectMember | null> => {
-  return await ProjectModel.addMember(projectId, userId, role as 'admin' | 'member');
+export const addProjectMemberDB = async (projectId: number, userId: number, role: string = 'reviewer'): Promise<ProjectMember | null> => {
+  return await ProjectModel.addMember(projectId, userId, role as 'submitter' | 'reviewer');
 };
 
 export const removeProjectMemberDB = async (projectId: number, userId: number): Promise<boolean> => {

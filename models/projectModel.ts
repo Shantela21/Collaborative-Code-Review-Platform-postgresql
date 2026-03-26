@@ -126,7 +126,7 @@ export class ProjectModel {
     return (result.rowCount ?? 0) > 0;
   }
 
-  static async addMember(projectId: number, userId: number, role = 'member'): Promise<ProjectMember> {
+  static async addMember(projectId: number, userId: number, role = 'reviewer'): Promise<ProjectMember> {
     const text = `
       INSERT INTO project_members (project_id, user_id, role)
       VALUES ($1, $2, $3)

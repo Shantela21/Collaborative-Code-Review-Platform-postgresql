@@ -40,7 +40,7 @@ export class UserModel {
       user.name,
       user.email,
       hashedPassword,
-      user.role || "developer",
+      user.role || "reviewer",
     ];
     const result = await query(text, values);
     return result.rows[0];
@@ -52,7 +52,7 @@ export class UserModel {
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
-      role VARCHAR(50) NOT NULL DEFAULT 'developer',
+      role VARCHAR(50) NOT NULL DEFAULT 'reviewer',
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`;

@@ -34,8 +34,8 @@ export const createProject = async (req: Request, res: Response) => {
     const createdProject = assertExists(project, "Project creation failed");
     const projectId = assertExists(createdProject.id, "Project ID missing");
 
-    // Add creator as admin
-    await addProjectMemberDB(projectId, userId, "admin");
+    // Add creator as submitter (project owner)
+    await addProjectMemberDB(projectId, userId, "submitter");
 
     // Build ProjectWithMembers
     const projectWithMembers: ProjectWithMembers = {
@@ -50,7 +50,7 @@ export const createProject = async (req: Request, res: Response) => {
           id: userId,
           name: (req.user as any)?.name || "",
           email: req.user?.email || "",
-          role: "admin",
+          role: "submitter",
           member_since: new Date(),
         },
       ],
@@ -118,7 +118,7 @@ export const updateProject = async (req: Request, res: Response) => {
     const userId = assertExists(req.user?.id, "Authentication required");
 
     const member = await getProjectMemberDB(projectId, userId);
-    if (!member || member.role !== "admin") {
+    if (!member || member.role !== "submitter") {
       return res
         .status(403)
         .json({ message: "Not authorized to update this project" });
@@ -142,7 +142,7 @@ export const deleteProject = async (req: Request, res: Response) => {
     const userId = assertExists(req.user?.id, "Authentication required");
 
     const member = await getProjectMemberDB(projectId, userId);
-    if (!member || member.role !== "admin") {
+    if (!member || member.role !== "submitter") {
       return res
         .status(403)
         .json({ message: "Not authorized to delete this project" });
@@ -160,14 +160,14 @@ export const deleteProject = async (req: Request, res: Response) => {
 export const addProjectMember = async (req: Request, res: Response) => {
   try {
     const projectId = parseInt(req.params.id);
-    const { userId, role = "member" } = req.body;
+    const { userId, role = "reviewer" } = req.body;
     const currentUserId = assertExists(req.user?.id, "Authentication required");
 
     const currentUserMember = await getProjectMemberDB(
       projectId,
       currentUserId,
     );
-    if (!currentUserMember || currentUserMember.role !== "admin") {
+    if (!currentUserMember || currentUserMember.role !== "submitter") {
       return res.status(403).json({ message: "Not authorized to add members" });
     }
 
@@ -190,20 +190,20 @@ export const removeProjectMember = async (req: Request, res: Response) => {
       projectId,
       currentUserId,
     );
-    if (!currentUserMember || currentUserMember.role !== "admin") {
+    if (!currentUserMember || currentUserMember.role !== "submitter") {
       return res
         .status(403)
         .json({ message: "Not authorized to remove members" });
     }
 
-    // Prevent removing yourself if you are the only admin
+    // Prevent removing yourself if you are the only submitter
     if (userIdToRemove === currentUserId) {
       const members = await getProjectMembersDB(projectId);
-      const adminMembers = members.filter((m) => m.role === "admin");
-      if (adminMembers.length <= 1) {
+      const submitterMembers = members.filter((m) => m.role === "submitter");
+      if (submitterMembers.length <= 1) {
         return res
           .status(400)
-          .json({ message: "Cannot remove the only admin" });
+          .json({ message: "Cannot remove the only submitter" });
       }
     }
 

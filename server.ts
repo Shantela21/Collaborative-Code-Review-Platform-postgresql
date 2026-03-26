@@ -19,6 +19,7 @@ import { ReviewModel } from "./models/reviewModel";
 import { NotificationModel } from "./models/notificationModel";
 import { errorHandler, notFound } from "./middleware/errorHandler";
 import { initializeWebSocket } from "./service/websocketService";
+import { addRoleToUsersTable } from "./migrations/addRoleColumn";
 
 const express = require("express");
 const app: Express = express();
@@ -52,6 +53,7 @@ app.use(errorHandler);
 
 async function initializeDB() {
   await UserModel.createUserTable();
+  await addRoleToUsersTable(); // Ensure role column exists
   await ProjectModel.createProjectTable();
   await SubmissionModel.createSubmissionTable();
   await CommentModel.createCommentTable();
