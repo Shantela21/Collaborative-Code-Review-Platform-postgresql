@@ -20,6 +20,7 @@ import { NotificationModel } from "./models/notificationModel";
 import { errorHandler, notFound } from "./middleware/errorHandler";
 import { initializeWebSocket } from "./service/websocketService";
 import { addRoleToUsersTable } from "./migrations/addRoleColumn";
+import { addCreatedByToProjectsTable } from "./migrations/fixProjectsTable";
 
 const express = require("express");
 const app: Express = express();
@@ -55,10 +56,13 @@ async function initializeDB() {
   await UserModel.createUserTable();
   await addRoleToUsersTable(); // Ensure role column exists
   await ProjectModel.createProjectTable();
+  await addCreatedByToProjectsTable(); // Auto-fix projects table structure
   await SubmissionModel.createSubmissionTable();
   await CommentModel.createCommentTable();
   await ReviewModel.createReviewTable();
   await NotificationModel.createNotificationTable();
+  
+  console.log('✅ Database initialization completed');
 }
 
 server.listen(process.env.PORT, () => {
